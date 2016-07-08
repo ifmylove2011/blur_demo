@@ -20,7 +20,7 @@ import android.view.View;
 public class BitmapUtils {
 
 	/**
-	 * 做个兼容
+	 * 兼容处理
 	 * 
 	 * @param context
 	 *            上下文
@@ -40,7 +40,7 @@ public class BitmapUtils {
 	}
 
 	/**
-	 * 做个兼容
+	 * 兼容处理
 	 * 
 	 * @param context
 	 *            上下文

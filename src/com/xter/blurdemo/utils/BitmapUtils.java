@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.renderscript.Allocation;
@@ -60,8 +61,6 @@ public class BitmapUtils {
 	/**
 	 * 高斯模糊
 	 * 
-	 * @param context
-	 *            上下文
 	 * @param srcBitmap
 	 *            源位图
 	 * @param radius
@@ -286,7 +285,7 @@ public class BitmapUtils {
 		Bitmap dstArea = getDstArea(bitmap, view);
 
 		// 作模糊处理
-		dstArea = blurByGauss(dstArea, (int) radius);
+		dstArea = blurByGauss(zoomImage(dstArea, 0.8f), (int) radius);
 
 		// 设置背景
 		view.setBackground(new BitmapDrawable(context.getResources(), dstArea));
@@ -298,9 +297,12 @@ public class BitmapUtils {
 	 * RenderScript模糊
 	 * 
 	 * @param context
+	 *            上下文
 	 * @param bitmap
+	 *            源位图
 	 * @param radius
-	 * @return
+	 *            模糊半径
+	 * @return bitmap
 	 */
 	@SuppressLint("NewApi")
 	public static Bitmap blurBitmapByRender(Context context, Bitmap bitmap, float radius) {
@@ -336,6 +338,7 @@ public class BitmapUtils {
 	public static void blurByRender(Context context, Bitmap bitmap, View view, float radius) {
 		// 得到要处理的区域
 		Bitmap dstArea = getDstArea(bitmap, view);
+		dstArea = zoomImage(dstArea, 0.8f);
 
 		// 作模糊处理
 		RenderScript rs = RenderScript.create(context);
@@ -369,6 +372,29 @@ public class BitmapUtils {
 		canvas.translate(-view.getLeft(), -view.getTop());
 		canvas.drawBitmap(bitmap, 0, 0, null);
 		return dstArea;
+	}
+
+	/**
+	 * 缩放图片
+	 * 
+	 * @param srcBitmap
+	 *            源图
+	 * @param newWidth
+	 *            新宽
+	 * @param newHeight
+	 *            新高
+	 * @return bitmap
+	 */
+	public static Bitmap zoomImage(Bitmap srcBitmap, float scale) {
+		// 获取这个图片的宽和高
+		float width = srcBitmap.getWidth();
+		float height = srcBitmap.getHeight();
+		// 创建操作图片用的matrix对象
+		Matrix matrix = new Matrix();
+		// 缩放图片动作
+		matrix.postScale(scale, scale);
+		Bitmap bitmap = Bitmap.createBitmap(srcBitmap, 0, 0, (int) width, (int) height, matrix, true);
+		return bitmap;
 	}
 
 }
